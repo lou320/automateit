@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Burmese Story Reviewer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0f19;
+      --panel: #151a28;
+      --accent: #7f5af0;
+      --accent-soft: rgba(127, 90, 240, 0.15);
+      --text: #f5f7ff;
+      --muted: #94a3b8;
+      --danger: #f87171;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(127, 90, 240, 0.15), transparent 55%), var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 2rem 1rem 3rem;
+    }
+
+    .app-shell {
+      width: min(1100px, 100%);
+      background: rgba(15, 20, 35, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 24px;
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(18px);
+      padding: 2.5rem clamp(1.25rem, 3vw, 2.5rem);
+      display: grid;
+      gap: 2rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      letter-spacing: 0.02em;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+      color: var(--text);
+      font-size: 1rem;
+      transition: border 150ms ease, box-shadow 150ms ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(127, 90, 240, 0.35);
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 0.9rem 1.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      background: linear-gradient(120deg, var(--accent), #6ef3ff);
+      cursor: pointer;
+      transition: transform 120ms ease, opacity 120ms ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .primary-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .secondary-btn {
+      background: var(--accent-soft);
+      color: var(--text);
+      border: 1px solid rgba(127, 90, 240, 0.4);
+    }
+
+    .results-card {
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 20px;
+      padding: 1.5rem;
+      background: rgba(18, 22, 34, 0.9);
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .model-helper {
+      background: rgba(148, 163, 184, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 18px;
+      padding: 1rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .model-helper button {
+      width: fit-content;
+      background: rgba(127, 90, 240, 0.25);
+      border: 1px solid rgba(127, 90, 240, 0.45);
+      border-radius: 999px;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.95rem;
+    }
+
+    .model-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .model-chip {
+      border: 1px solid rgba(110, 243, 255, 0.4);
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      background: rgba(110, 243, 255, 0.12);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 120ms ease;
+    }
+
+    .model-chip:hover {
+      transform: translateY(-1px);
+    }
+
+    .results-card h2 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .result-block {
+      background: rgba(127, 90, 240, 0.08);
+      border: 1px dashed rgba(127, 90, 240, 0.4);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+
+    .result-block h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .result-text {
+      margin: 0;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tag {
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(110, 243, 255, 0.12);
+      border: 1px solid rgba(110, 243, 255, 0.35);
+      font-size: 0.95rem;
+    }
+
+    .image-wrap {
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: #05070f;
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+    }
+
+    .image-wrap img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .status {
+      min-height: 1.25rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem;
+      }
+      textarea {
+        min-height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header>
+      <h1>Burmese Story Assistant</h1>
+      <p>Generate a heartfelt review, curated tags, and a ready-to-use image prompt for your Burmese stories.</p>
+    </header>
+
+    <section class="grid">
+      <div class="grid two">
+        <div>
+          <label for="apiKey">Google Gemini API Key</label>
+          <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off" />
+        </div>
+        <div>
+          <label for="title">Story Title</label>
+          <input type="text" id="title" placeholder="သင်၏ဇာတ်လမ်းခေါင်းစဉ်" />
+        </div>
+        <div>
+          <label for="model">Gemini Model</label>
+          <input type="text" id="model" list="modelOptions" placeholder="gemini-3.0-flash" />
+          <datalist id="modelOptions">
+            <option value="gemini-3.0-flash"></option>
+            <option value="gemini-3.0-pro"></option>
+            <option value="gemini-1.5-flash"></option>
+            <option value="gemini-1.5-pro"></option>
+          </datalist>
+        </div>
+      </div>
+
+      <div>
+        <label for="content">Story Content</label>
+        <textarea id="content" placeholder="သင်၏ဇာတ်လမ်းကို ဤနေရာတွင်ရေးပါ"></textarea>
+      </div>
+
+      <div class="model-helper">
+        <div>
+          <strong>Don't see your model name?</strong>
+          <p style="margin: 0.35rem 0 0; color: var(--muted);">Use your API key to query the public list of models your key can access.</p>
+        </div>
+        <button type="button" id="listModelsBtn">List available models</button>
+        <div id="modelsOutput" class="model-chips" aria-live="polite" style="min-height:1.5rem; color: var(--muted);">
+          Model names will appear here.
+        </div>
+      </div>
+
+      <div class="primary-actions">
+        <button id="generateBtn">Generate Content</button>
+        <button id="copyBtn" class="secondary-btn" disabled>Copy to Clipboard</button>
+        <div class="status" id="status"></div>
+      </div>
+    </section>
+
+    <section class="results-card" aria-live="polite">
+      <h2>Results</h2>
+
+      <div class="result-block">
+        <h3>Review</h3>
+        <pre id="review" class="result-text" style="white-space:pre-wrap;font-size:1.08rem;background:none;border:none;padding:0;margin:0;">—</pre>
+      </div>
+
+      <div class="result-block">
+        <h3>Tags</h3>
+        <div id="tags" class="tags">—</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const apiKeyInput = document.getElementById('apiKey');
+  const titleInput = document.getElementById('title');
+    const contentInput = document.getElementById('content');
+    const statusEl = document.getElementById('status');
+    const reviewEl = document.getElementById('review');
+    const tagsEl = document.getElementById('tags');
+  const generateBtn = document.getElementById('generateBtn');
+  const copyBtn = document.getElementById('copyBtn');
+    // Gemini image generation function
+    const callGeminiImage = async (apiKey, model, prompt) => {
+      // Most Gemini image models use /generateImage endpoint
+      const safeModel = encodeURIComponent(model);
+      const endpoint = `https://generativelanguage.googleapis.com/${API_VERSION}/models/${safeModel}:generateImage?key=${apiKey}`;
+      const body = {
+        prompt: {
+          text: prompt
+        },
+        // Optionally add image config here if supported
+      };
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Gemini image request failed');
+      }
+      const data = await response.json();
+      // Gemini image API usually returns base64 or a URL
+      // Try to extract a URL if available, else fallback to base64
+      const imageUrl = data?.imageUrl || data?.images?.[0]?.url || null;
+      const base64 = data?.images?.[0]?.bytes || null;
+      if (imageUrl) return imageUrl;
+      if (base64) return `data:image/png;base64,${base64}`;
+      throw new Error('No image returned from Gemini');
+    };
+    const modelInput = document.getElementById('model');
+  const listModelsBtn = document.getElementById('listModelsBtn');
+  const modelsOutput = document.getElementById('modelsOutput');
+
+  const STORAGE_KEY = 'geminiApiKey';
+  const MODEL_STORAGE_KEY = 'geminiModelName';
+  const DEFAULT_MODEL = 'gemini-3.0-flash';
+  const API_VERSION = 'v1';
+
+    const savedKey = localStorage.getItem(STORAGE_KEY);
+    if (savedKey) {
+      apiKeyInput.value = savedKey;
+    }
+
+    const savedModel = localStorage.getItem(MODEL_STORAGE_KEY);
+    modelInput.value = savedModel || DEFAULT_MODEL;
+
+    apiKeyInput.addEventListener('change', () => {
+      if (apiKeyInput.value.trim()) {
+        localStorage.setItem(STORAGE_KEY, apiKeyInput.value.trim());
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    });
+
+    const persistModelValue = (value) => {
+      const trimmed = value.trim();
+      if (trimmed) {
+        localStorage.setItem(MODEL_STORAGE_KEY, trimmed);
+      } else {
+        localStorage.removeItem(MODEL_STORAGE_KEY);
+      }
+    };
+
+    modelInput.addEventListener('change', () => {
+      persistModelValue(modelInput.value);
+    });
+
+  const systemInstruction = "You are a content reviewer for Burmese stories. Read the story provided. Output a JSON object with two fields: review (a 1-paragraph summary/review in Burmese, engaging and emotional) and tags (5 relevant tags in Burmese).";
+
+    const setStatus = (msg, isError = false) => {
+      statusEl.textContent = msg;
+      statusEl.classList.toggle('error', isError);
+    };
+
+    const renderTags = (tags) => {
+      tagsEl.innerHTML = '';
+      if (!tags || !tags.length) {
+        tagsEl.textContent = '—';
+        return;
+      }
+      tags.forEach(tag => {
+        const pill = document.createElement('span');
+        pill.className = 'tag';
+        pill.textContent = tag;
+        tagsEl.appendChild(pill);
+      });
+    };
+
+
+    const buildCopyPayload = (title, content, review, tags) => (
+      `${review}\n\nTags: ${Array.isArray(tags) ? tags.join(', ') : tags}`
+    );
+
+    const handleCopy = () => {
+      const reviewText = reviewEl.textContent === '—' ? '' : reviewEl.textContent;
+      const tagsList = tagsEl.textContent === '—' ? [] : Array.from(tagsEl.querySelectorAll('.tag')).map(el => el.textContent);
+      const payload = buildCopyPayload(titleInput.value.trim(), contentInput.value.trim(), reviewText, tagsList);
+      navigator.clipboard.writeText(payload).then(() => {
+        setStatus('Copied to clipboard.');
+        // Auto-select review for user
+        reviewEl.focus();
+        if (window.getSelection && document.createRange) {
+          const range = document.createRange();
+          range.selectNodeContents(reviewEl);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      }).catch(() => {
+        setStatus('Failed to copy.', true);
+      });
+    };
+
+    copyBtn.addEventListener('click', handleCopy);
+
+    const formatModelId = (name) => (name || '').replace(/^models\//, '');
+
+    const renderModelChips = (models = []) => {
+      modelsOutput.innerHTML = '';
+      if (!models.length) {
+        modelsOutput.textContent = 'No models returned for this key.';
+        return;
+      }
+      models.forEach((model) => {
+        const modelId = formatModelId(model?.name ?? '') || model?.displayName || 'unknown-model';
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'model-chip';
+        chip.textContent = modelId;
+        chip.title = model?.displayName ? `${model.displayName} (${modelId})` : modelId;
+        chip.addEventListener('click', () => {
+          modelInput.value = modelId;
+          persistModelValue(modelId);
+          setStatus(`Selected model: ${modelId}`);
+        });
+        modelsOutput.appendChild(chip);
+      });
+    };
+
+    const fetchModels = async (apiKey) => {
+      modelsOutput.textContent = 'Fetching models…';
+      const endpoint = `https://generativelanguage.googleapis.com/${API_VERSION}/models?key=${apiKey}&pageSize=200`;
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || 'Failed to list models.');
+      }
+      const payload = await response.json();
+      const models = payload?.models?.filter((model) => {
+        const methods = model?.supportedGenerationMethods || [];
+        return methods.includes('generateContent');
+      }) || [];
+      renderModelChips(models);
+    };
+
+    listModelsBtn.addEventListener('click', async () => {
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        setStatus('Enter an API key before listing models.', true);
+        return;
+      }
+      listModelsBtn.disabled = true;
+      try {
+        await fetchModels(apiKey);
+        setStatus('Model list updated.');
+      } catch (error) {
+        console.error(error);
+        modelsOutput.textContent = error.message || 'Failed to fetch models.';
+        setStatus(error.message || 'Failed to fetch models.', true);
+      } finally {
+        listModelsBtn.disabled = false;
+      }
+    });
+
+    const parseGeminiResponse = (textPayload) => {
+      try {
+        return JSON.parse(textPayload);
+      } catch (error) {
+        const fallback = textPayload.match(/\{[\s\S]*\}/);
+        if (fallback) {
+          return JSON.parse(fallback[0]);
+        }
+        throw new Error('Gemini response was not valid JSON.');
+      }
+    };
+
+    const callGemini = async (apiKey, model, title, content) => {
+      const safeModel = encodeURIComponent(model);
+      const endpoint = `https://generativelanguage.googleapis.com/${API_VERSION}/models/${safeModel}:generateContent?key=${apiKey}`;
+      const body = {
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: systemInstruction }]
+          },
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Story Title: ${title}\nStory Content:\n${content}`
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.4
+        }
+      };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        if (response.status === 404) {
+          throw new Error('Model not found for this API version. Verify the model name and that it is available in the public Generative Language API.');
+        }
+        throw new Error(errorText || 'Gemini request failed');
+      }
+
+      const data = await response.json();
+      const firstCandidate = data?.candidates?.[0];
+      const textPayload = firstCandidate?.content?.parts?.[0]?.text;
+      if (!textPayload) {
+        throw new Error('Gemini response missing content');
+      }
+
+      const parsed = parseGeminiResponse(textPayload);
+      return parsed;
+    };
+
+    generateBtn.addEventListener('click', async () => {
+      const apiKey = apiKeyInput.value.trim();
+      const title = titleInput.value.trim();
+      const content = contentInput.value.trim();
+      const model = modelInput.value.trim() || DEFAULT_MODEL;
+
+      if (!apiKey || !title || !content) {
+        setStatus('Please provide API key, title, and content.', true);
+        return;
+      }
+
+      if (!model) {
+        setStatus('Please choose a Gemini model.', true);
+        return;
+      }
+
+      generateBtn.disabled = true;
+      copyBtn.disabled = true;
+      setStatus('Generating…');
+      reviewEl.textContent = '—';
+      renderTags();
+
+      try {
+        const result = await callGemini(apiKey, model, title, content);
+        // Format review: prepend title, ensure paragraph
+        let formattedReview = '';
+        if (result.review) {
+          formattedReview = `"${title}"
+\n${result.review.trim()}`;
+        } else {
+          formattedReview = `"${title}"\n\n—`;
+        }
+        reviewEl.textContent = formattedReview;
+        renderTags(result.tags);
+        copyBtn.disabled = false;
+        setStatus('Generation complete.');
+      } catch (error) {
+        console.error(error);
+        setStatus(error.message || 'Generation failed.', true);
+      } finally {
+        generateBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
