@@ -236,6 +236,18 @@
       object-fit: cover;
     }
 
+    /* poster container specific styles */
+    #image-container {
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      background: #05070f;
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+    }
+
     .status {
       min-height: 1.25rem;
       font-size: 0.95rem;
@@ -306,6 +318,11 @@
         <button id="copyBtn" class="secondary-btn" disabled>Copy to Clipboard</button>
         <div class="status" id="status"></div>
       </div>
+    </section>
+
+    <!-- Image poster container (will be populated after generation) -->
+    <section id="image-container" class="image-wrap" aria-live="polite" style="display:none;">
+      <div style="color: var(--muted); padding: 1rem; text-align:center;">Generated poster will appear here after generation.</div>
     </section>
 
     <section class="results-card" aria-live="polite">
@@ -401,7 +418,20 @@
       persistModelValue(modelInput.value);
     });
 
-  const systemInstruction = "You are a content reviewer for Burmese stories. Read the story provided. Output a JSON object with two fields: review (a 1-paragraph summary/review in Burmese, engaging and emotional) and tags (5 relevant tags in Burmese).";
+  const systemInstruction = `You are an expert Burmese Adult Fiction Reviewer. Read the story provided and output a JSON object with exactly two fields: "review" and "tags".
+
+1. Field "review":
+   - Write a sensational, suspenseful, and erotic teaser in Burmese (approx. 4 paragraphs).
+   - Tone: Use descriptive words like 'လုံးကြီးပေါက်လှ' (curvaceous), 'ရမ္မက်' (lust), 'အနုစိတ်' (detailed), 'သာယာမိ' (enjoyed).
+   - Structure:
+     * Para 1: Intro. Start with "ဒီဇာတ်လမ်းလေးကတော့...". Describe characters deeply (Age, Body type, Role).
+     * Para 2: The Setup. Describe the taboo/secret relationship or conflict. Use suspense questions like "ဘယ်လို...မလဲ".
+     * Para 3: The Climax. Describe the most intense scene. YOU MUST include a specific dialogue/quote from the story.
+     * Para 4: CTA. End with a strong hook: "...ဆိုတာကို ရင်တမမနဲ့ ဖတ်ရှုချင်တယ်ဆိုရင်တော့ အခုပဲ ဒီဇာတ်လမ်းလေးကို ဆက်လက် ဖတ်ရှုလိုက်ပါနော်။"
+   - Format: Use "\\n\\n" to separate paragraphs within the JSON string.
+
+2. Field "tags":
+   - An array of 10 relevant tags in Burmese (e.g., 'မုဆိုးမ', 'အန်တီ', 'အင်းစက်', 'ဆရာမ').`;
 
     const setStatus = (msg, isError = false) => {
       statusEl.textContent = msg;
