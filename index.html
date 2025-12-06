@@ -421,17 +421,30 @@
   const systemInstruction = `You are an expert Burmese Adult Fiction Reviewer. Read the story provided and output a JSON object with exactly two fields: "review" and "tags".
 
 1. Field "review":
-   - Write a sensational, suspenseful, and erotic teaser in Burmese (approx. 3 paragraphs).
+   - Write a sensational, suspenseful, and erotic teaser in Burmese (exactly 2 paragraphs).
    - Tone: Use descriptive words like 'လုံးကြီးပေါက်လှ' (curvaceous), 'ရမ္မက်' (lust), 'အနုစိတ်' (detailed), 'သာယာမိ' (enjoyed).
    - Structure:
-     * Para 1: Intro. Start with "ဒီဇာတ်လမ်းလေးကတော့...". Describe characters deeply (Age, Body type, Role).
-     * Para 2: The Setup. Describe the taboo/secret relationship or conflict. Use suspense questions like "ဘယ်လို...မလဲ".
-     * Para 3: The Climax. Describe the most intense scene. YOU MUST include a specific dialogue/quote from the story.
-     * Para 4: CTA. End with a strong hook: "...ဆိုတာကို ရင်တမမနဲ့ ဖတ်ရှုချင်တယ်ဆိုရင်တော့ အခုပဲ ဒီဇာတ်လမ်းလေးကို ဆက်လက် ဖတ်ရှုလိုက်ပါနော်။"
-   - Format: Use "\\n\\n" to separate paragraphs within the JSON string.
+     * Para 1: The Main Review. Start with "ဒီဇာတ်လမ်းလေးကတော့...". Weave together the character descriptions (Age, Body type, Role), the taboo/secret relationship, and the climax. YOU MUST include a specific dialogue/quote from the story within this paragraph.
+     * Para 2: CTA. End with a strong hook: "...ဆိုတာကို ရင်တမမနဲ့ ဖတ်ရှုချင်တယ်ဆိုရင်တော့ အခုပဲ ဒီဇာတ်လမ်းလေးကို ဆက်လက် ဖတ်ရှုလိုက်ပါနော်။"
+   - Format: Use "\\n\\n" to separate the two paragraphs within the JSON string.
 
 2. Field "tags":
    - An array of 10 relevant tags in Burmese (e.g., 'မုဆိုးမ', 'အန်တီ', 'အင်းစက်', 'ဆရာမ').`;
+
+//   const systemInstruction = `You are an expert Burmese Adult Fiction Reviewer. Read the story provided and output a JSON object with exactly two fields: "review" and "tags".
+
+// 1. Field "review":
+//    - Write a sensational, suspenseful, and erotic teaser in Burmese (approx. 1 paragraphs).
+//    - Tone: Use descriptive words like 'လုံးကြီးပေါက်လှ' (curvaceous), 'ရမ္မက်' (lust), 'အနုစိတ်' (detailed), 'သာယာမိ' (enjoyed).
+//    - Structure:
+//      * Para 1: Intro. Start with "ဒီဇာတ်လမ်းလေးကတော့...". Describe characters deeply (Age, Body type, Role).
+//      * Para 2: The Setup. Describe the taboo/secret relationship or conflict. Use suspense questions like "ဘယ်လို...မလဲ".
+//      * Para 3: The Climax. Describe the most intense scene. YOU MUST include a specific dialogue/quote from the story.
+//      * Para 4: CTA. End with a strong hook: "...ဆိုတာကို ရင်တမမနဲ့ ဖတ်ရှုချင်တယ်ဆိုရင်တော့ အခုပဲ ဒီဇာတ်လမ်းလေးကို ဆက်လက် ဖတ်ရှုလိုက်ပါနော်။"
+//    - Format: Use "\\n\\n" to separate paragraphs within the JSON string.
+
+// 2. Field "tags":
+//    - An array of 10 relevant tags in Burmese (e.g., 'မုဆိုးမ', 'အန်တီ', 'အင်းစက်', 'ဆရာမ').`;
 
     const setStatus = (msg, isError = false) => {
       statusEl.textContent = msg;
